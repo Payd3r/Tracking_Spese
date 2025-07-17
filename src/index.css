@@ -2,41 +2,79 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+/* Tracking Spese - Glass UI Design System inspired by Vision OS
 All colors MUST be HSL.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Glass UI Background System */
+    --background: 240 10% 98%;
+    --background-glass: 240 10% 98% / 0.8;
+    --background-blur: 240 10% 95% / 0.6;
+    --foreground: 240 10% 8%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Glass Cards */
+    --card: 0 0% 100% / 0.9;
+    --card-glass: 240 10% 100% / 0.7;
+    --card-foreground: 240 10% 10%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    /* Popover Glass */
+    --popover: 0 0% 100% / 0.95;
+    --popover-foreground: 240 10% 10%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary - Blue gradient inspired by Apple */
+    --primary: 212 100% 48%;
+    --primary-light: 212 100% 60%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glass: 212 100% 48% / 0.9;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Soft glass effect */
+    --secondary: 240 10% 96% / 0.8;
+    --secondary-foreground: 240 10% 15%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted glass surfaces */
+    --muted: 240 5% 94% / 0.7;
+    --muted-foreground: 240 5% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent - Purple tint for highlights */
+    --accent: 250 70% 60%;
+    --accent-light: 250 70% 70%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Success - Green for income */
+    --success: 142 76% 36%;
+    --success-light: 142 76% 46%;
+    --success-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Warning - Orange for expenses */
+    --warning: 25 95% 53%;
+    --warning-light: 25 95% 63%;
+    --warning-foreground: 0 0% 100%;
 
-    --radius: 0.5rem;
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-light: 0 84% 70%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Borders and inputs with glass effect */
+    --border: 240 6% 90% / 0.5;
+    --border-strong: 240 10% 80%;
+    --input: 240 10% 96% / 0.8;
+    --ring: 212 100% 48% / 0.3;
+
+    /* Glass UI specific */
+    --glass-background: 240 10% 100% / 0.7;
+    --glass-border: 240 10% 100% / 0.2;
+    --glass-shadow: 240 10% 0% / 0.1;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(212 100% 48%), hsl(212 100% 60%));
+    --gradient-glass: linear-gradient(135deg, hsl(240 10% 100% / 0.7), hsl(240 10% 95% / 0.5));
+    --gradient-success: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 46%));
+    --gradient-warning: linear-gradient(135deg, hsl(25 95% 53%), hsl(25 95% 63%));
+
+    --radius: 1rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -56,33 +94,71 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark Glass UI */
+    --background: 240 10% 5%;
+    --background-glass: 240 10% 10% / 0.8;
+    --background-blur: 240 10% 8% / 0.6;
+    --foreground: 240 5% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    /* Dark Glass Cards */
+    --card: 240 10% 10% / 0.9;
+    --card-glass: 240 10% 15% / 0.7;
+    --card-foreground: 240 5% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    /* Dark Popover */
+    --popover: 240 10% 8% / 0.95;
+    --popover-foreground: 240 5% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    /* Dark Primary */
+    --primary: 212 100% 55%;
+    --primary-light: 212 100% 65%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glass: 212 100% 55% / 0.9;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    /* Dark Secondary */
+    --secondary: 240 10% 15% / 0.8;
+    --secondary-foreground: 240 5% 85%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    /* Dark Muted */
+    --muted: 240 5% 12% / 0.7;
+    --muted-foreground: 240 5% 60%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    /* Dark Accent */
+    --accent: 250 70% 65%;
+    --accent-light: 250 70% 75%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    /* Dark Success */
+    --success: 142 76% 42%;
+    --success-light: 142 76% 52%;
+    --success-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    /* Dark Warning */
+    --warning: 25 95% 58%;
+    --warning-light: 25 95% 68%;
+    --warning-foreground: 0 0% 100%;
+
+    /* Dark Destructive */
+    --destructive: 0 84% 65%;
+    --destructive-light: 0 84% 75%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Dark Borders */
+    --border: 240 6% 20% / 0.5;
+    --border-strong: 240 10% 25%;
+    --input: 240 10% 12% / 0.8;
+    --ring: 212 100% 55% / 0.3;
+
+    /* Dark Glass UI specific */
+    --glass-background: 240 10% 10% / 0.7;
+    --glass-border: 240 10% 30% / 0.2;
+    --glass-shadow: 240 10% 0% / 0.3;
+
+    /* Dark Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(212 100% 55%), hsl(212 100% 65%));
+    --gradient-glass: linear-gradient(135deg, hsl(240 10% 15% / 0.7), hsl(240 10% 10% / 0.5));
+    --gradient-success: linear-gradient(135deg, hsl(142 76% 42%), hsl(142 76% 52%));
+    --gradient-warning: linear-gradient(135deg, hsl(25 95% 58%), hsl(25 95% 68%));
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -101,5 +177,65 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    background-image: var(--gradient-glass);
+    min-height: 100vh;
   }
+}
+
+@layer components {
+  /* Glass UI Components */
+  .glass-card {
+    @apply backdrop-blur-xl border border-white/20 shadow-xl;
+    background: hsl(var(--card-glass));
+    border-color: hsl(var(--glass-border));
+    box-shadow: 0 8px 32px hsl(var(--glass-shadow));
+  }
+  
+  .glass-button {
+    @apply backdrop-blur-md border border-white/20 shadow-lg transition-all duration-300;
+    background: hsl(var(--glass-background));
+    border-color: hsl(var(--glass-border));
+  }
+  
+  .glass-input {
+    @apply backdrop-blur-md border border-white/20 bg-transparent;
+    background: hsl(var(--input));
+    border-color: hsl(var(--glass-border));
+  }
+
+  /* Floating bottom navigation */
+  .floating-nav {
+    @apply fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50;
+    @apply glass-card px-6 py-3 rounded-full;
+  }
+
+  /* Smooth animations */
+  .smooth-enter {
+    @apply transition-all duration-500 ease-out;
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Balance display gradient text */
+  .balance-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Category icons with gradient backgrounds */
+  .category-expense { background: var(--gradient-warning); }
+  .category-income { background: var(--gradient-success); }
+  .category-transfer { background: var(--gradient-primary); }
 }

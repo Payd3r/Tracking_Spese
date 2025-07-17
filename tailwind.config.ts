@@ -26,7 +26,9 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					light: 'hsl(var(--primary-light))',
+					foreground: 'hsl(var(--primary-foreground))',
+					glass: 'hsl(var(--primary-glass))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -34,6 +36,7 @@ export default {
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
+					light: 'hsl(var(--destructive-light))',
 					foreground: 'hsl(var(--destructive-foreground))'
 				},
 				muted: {
@@ -42,7 +45,18 @@ export default {
 				},
 				accent: {
 					DEFAULT: 'hsl(var(--accent))',
+					light: 'hsl(var(--accent-light))',
 					foreground: 'hsl(var(--accent-foreground))'
+				},
+				success: {
+					DEFAULT: 'hsl(var(--success))',
+					light: 'hsl(var(--success-light))',
+					foreground: 'hsl(var(--success-foreground))'
+				},
+				warning: {
+					DEFAULT: 'hsl(var(--warning))',
+					light: 'hsl(var(--warning-light))',
+					foreground: 'hsl(var(--warning-foreground))'
 				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
@@ -50,7 +64,13 @@ export default {
 				},
 				card: {
 					DEFAULT: 'hsl(var(--card))',
+					glass: 'hsl(var(--card-glass))',
 					foreground: 'hsl(var(--card-foreground))'
+				},
+				glass: {
+					background: 'hsl(var(--glass-background))',
+					border: 'hsl(var(--glass-border))',
+					shadow: 'hsl(var(--glass-shadow))'
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
