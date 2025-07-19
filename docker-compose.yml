@@ -32,7 +32,7 @@ services:
       - postgres    
     networks:
       - tracking-internal
-      
+
   # Frontend React
   frontend:
     build:
@@ -68,6 +68,6 @@ volumes:
     driver: local
 
 networks:
-  tracking-internal:
-    driver: bridge  web-proxy:
+  web-proxy:
     external: true
+  ecommerce-internal: {}
