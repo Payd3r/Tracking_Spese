@@ -44,9 +44,6 @@ services:
       - DB_PORT=5432
       - NODE_ENV=production
 
-
-
-
   # Applicazione Frontend (Produzione)
   frontend:
     build:
@@ -61,11 +58,10 @@ services:
     environment:
       - NODE_ENV=production
 
-
 volumes:
   postgres_data:
     driver: local
 
 networks:
   tracking_network:
-    driver: bridge
+    driver: bridge 
