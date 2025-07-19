@@ -16,10 +16,11 @@ services:
     networks:
       - tracking-internal
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d tracking_spese"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   # Backend API Node.js
   api:
