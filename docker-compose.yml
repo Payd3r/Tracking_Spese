@@ -70,4 +70,4 @@ volumes:
 networks:
   web-proxy:
     external: true
-  ecommerce-internal: {}
+  tracking-internal: {}
