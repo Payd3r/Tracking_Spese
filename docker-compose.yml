@@ -9,19 +9,23 @@ services:
       POSTGRES_DB: tracking_spese
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "${DB_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    command: postgres -c shared_preload_libraries=pg_stat_statements
     networks:
       - tracking_network
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d tracking_spese"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   # Backend API
   api:
@@ -32,8 +36,7 @@ services:
     ports:
       - "${API_PORT}:3001"
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
     networks:
       - tracking_network
     restart: unless-stopped
@@ -46,9 +49,10 @@ services:
       - NODE_ENV=production
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   # Applicazione Frontend (Produzione)
   frontend:
@@ -57,18 +61,19 @@ services:
       dockerfile: Dockerfile
     container_name: tracking_spese_frontend
     depends_on:
-      api:
-        condition: service_healthy
+      - api
     networks:
       - tracking_network
+      - web-proxy
     restart: unless-stopped
     environment:
       - NODE_ENV=production
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
 volumes:
   postgres_data:
@@ -77,3 +82,5 @@ volumes:
 networks:
   tracking_network:
     driver: bridge 
+  web-proxy:
+    external: true
