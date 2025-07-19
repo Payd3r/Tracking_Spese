@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 export interface Category {
   id: number;
@@ -41,13 +41,13 @@ export interface Statistics {
 export const api = {
   // Categories
   async getCategories(): Promise<Category[]> {
-    const response = await fetch(`${API_BASE_URL}/api/categories`);
+    const response = await fetch(`${API_BASE_URL}/categories`);
     if (!response.ok) throw new Error('Failed to fetch categories');
     return response.json();
   },
 
   async createCategory(category: Omit<Category, 'id' | 'created_at' | 'updated_at'>): Promise<Category> {
-    const response = await fetch(`${API_BASE_URL}/api/categories`, {
+    const response = await fetch(`${API_BASE_URL}/categories`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ export const api = {
   },
 
   async updateCategory(id: number, category: Partial<Category>): Promise<Category> {
-    const response = await fetch(`${API_BASE_URL}/api/categories/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ export const api = {
   },
 
   async deleteCategory(id: number): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/api/categories/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) throw new Error('Failed to delete category');
@@ -79,13 +79,13 @@ export const api = {
 
   // Transactions
   async getTransactions(): Promise<Transaction[]> {
-    const response = await fetch(`${API_BASE_URL}/api/transactions`);
+    const response = await fetch(`${API_BASE_URL}/transactions`);
     if (!response.ok) throw new Error('Failed to fetch transactions');
     return response.json();
   },
 
   async createTransaction(transaction: Omit<Transaction, 'id' | 'created_at' | 'updated_at'>): Promise<Transaction> {
-    const response = await fetch(`${API_BASE_URL}/api/transactions`, {
+    const response = await fetch(`${API_BASE_URL}/transactions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ export const api = {
   },
 
   async updateTransaction(id: number, transaction: Partial<Transaction>): Promise<Transaction> {
-    const response = await fetch(`${API_BASE_URL}/api/transactions/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/transactions/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -109,7 +109,7 @@ export const api = {
   },
 
   async deleteTransaction(id: number): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/api/transactions/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/transactions/${id}`, {
       method: 'DELETE',
     });
     if (!response.ok) throw new Error('Failed to delete transaction');
@@ -117,14 +117,14 @@ export const api = {
 
   // Balance
   async getBalance(): Promise<Balance> {
-    const response = await fetch(`${API_BASE_URL}/api/balance`);
+    const response = await fetch(`${API_BASE_URL}/balance`);
     if (!response.ok) throw new Error('Failed to fetch balance');
     return response.json();
   },
 
   // Statistics
   async getStatistics(period: 'day' | 'week' | 'month' | 'year' = 'month'): Promise<Statistics[]> {
-    const response = await fetch(`${API_BASE_URL}/api/statistics?period=${period}`);
+    const response = await fetch(`${API_BASE_URL}/statistics?period=${period}`);
     if (!response.ok) throw new Error('Failed to fetch statistics');
     return response.json();
   },
