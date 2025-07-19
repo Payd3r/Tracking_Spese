@@ -1,239 +1,299 @@
 import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
-import { Tag, Plus, Edit, Trash2 } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { api, Category } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { Plus, Edit, Trash2, X } from "lucide-react";
+import { categoryIcons, getIcon } from "@/lib/icons";
 
-interface Category {
-  id: string;
-  name: string;
-  icon: string;
-  type: 'income' | 'expense';
-}
-
-interface CategoryManagementProps {
-  categories: Category[];
-  onCategoriesChange: (categories: Category[]) => void;
-  isMobile: boolean;
-}
-
-export const CategoryManagement = ({ categories, onCategoriesChange, isMobile }: CategoryManagementProps) => {
+export const CategoryManagement = () => {
   const { toast } = useToast();
-  const [isOpen, setIsOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
-  const [newCategoryName, setNewCategoryName] = useState('');
-  const [newCategoryIcon, setNewCategoryIcon] = useState('📝');
-  const [newCategoryType, setNewCategoryType] = useState<'income' | 'expense'>('expense');
+  const [newCategory, setNewCategory] = useState({ name: '', icon: 'other' });
+  const [selectedIcon, setSelectedIcon] = useState('other');
 
-  const handleAddCategory = () => {
-    if (!newCategoryName.trim()) return;
+  // Fetch categories
+  const { data: categories = [], isLoading } = useQuery<Category[]>({
+    queryKey: ['categories'],
+    queryFn: api.getCategories,
+  });
 
-    const newCategory: Category = {
-      id: Date.now().toString(),
-      name: newCategoryName.trim(),
-      icon: newCategoryIcon,
-      type: newCategoryType
-    };
+  // Mutations
+  const createMutation = useMutation({
+    mutationFn: api.createCategory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      setIsAddDialogOpen(false);
+      setNewCategory({ name: '', icon: 'other' });
+      toast({
+        title: "Categoria creata",
+        description: "La categoria è stata aggiunta con successo",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Errore",
+        description: "Impossibile creare la categoria",
+        variant: "destructive",
+      });
+    },
+  });
 
-    onCategoriesChange([...categories, newCategory]);
-    
-    toast({
-      title: "Categoria aggiunta",
-      description: `La categoria "${newCategory.name}" è stata creata`
-    });
+  const updateMutation = useMutation({
+    mutationFn: ({ id, category }: { id: number; category: Partial<Category> }) =>
+      api.updateCategory(id, category),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      setEditingCategory(null);
+      toast({
+        title: "Categoria aggiornata",
+        description: "Le modifiche sono state salvate con successo",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Errore",
+        description: "Impossibile aggiornare la categoria",
+        variant: "destructive",
+      });
+    },
+  });
 
-    setNewCategoryName('');
-    setNewCategoryIcon('📝');
-    setIsOpen(false);
+  const deleteMutation = useMutation({
+    mutationFn: api.deleteCategory,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      toast({
+        title: "Categoria eliminata",
+        description: "La categoria è stata rimossa",
+        variant: "destructive",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Errore",
+        description: "Impossibile eliminare la categoria",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleCreate = () => {
+    if (newCategory.name.trim()) {
+      createMutation.mutate({
+        name: newCategory.name.trim(),
+        icon: newCategory.icon,
+      });
+    }
   };
 
-  const handleEditCategory = (category: Category) => {
-    setEditingCategory(category);
-    setNewCategoryName(category.name);
-    setNewCategoryIcon(category.icon);
-    setNewCategoryType(category.type);
-    setIsOpen(true);
+  const handleUpdate = () => {
+    if (editingCategory && editingCategory.name.trim()) {
+      updateMutation.mutate({
+        id: editingCategory.id,
+        category: {
+          name: editingCategory.name.trim(),
+          icon: editingCategory.icon,
+        },
+      });
+    }
   };
 
-  const handleUpdateCategory = () => {
-    if (!editingCategory || !newCategoryName.trim()) return;
-
-    const updatedCategories = categories.map(cat => 
-      cat.id === editingCategory.id 
-        ? { ...cat, name: newCategoryName.trim(), icon: newCategoryIcon, type: newCategoryType }
-        : cat
-    );
-
-    onCategoriesChange(updatedCategories);
-    
-    toast({
-      title: "Categoria aggiornata",
-      description: `La categoria è stata modificata`
-    });
-
-    setEditingCategory(null);
-    setNewCategoryName('');
-    setNewCategoryIcon('📝');
-    setIsOpen(false);
+  const handleDelete = (id: number) => {
+    deleteMutation.mutate(id);
   };
 
-  const handleDeleteCategory = (categoryId: string) => {
-    const updatedCategories = categories.filter(cat => cat.id !== categoryId);
-    onCategoriesChange(updatedCategories);
-    
-    toast({
-      title: "Categoria eliminata",
-      description: "La categoria è stata rimossa",
-      variant: "destructive"
-    });
+  const openEditDialog = (category: Category) => {
+    setEditingCategory({ ...category });
+    setSelectedIcon(category.icon);
   };
 
-  const content = (
-    <div className="space-y-6">
-      <div className="space-y-4">
-        <Label className="text-sm font-medium">Categorie Esistenti</Label>
-        <div className="space-y-2 max-h-60 overflow-y-auto">
-          {categories.map((category) => (
-            <div key={category.id} className="flex items-center justify-between p-3 glass-button rounded-lg">
-              <div className="flex items-center gap-3">
-                <span className="text-lg">{category.icon}</span>
-                <div>
-                  <p className="font-medium text-sm">{category.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {category.type === 'income' ? 'Entrata' : 'Uscita'}
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => handleEditCategory(category)}
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => handleDeleteCategory(category.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        <Label className="text-sm font-medium">
-          {editingCategory ? 'Modifica Categoria' : 'Nuova Categoria'}
-        </Label>
-        
-        <div className="space-y-3">
-          <div>
-            <Label htmlFor="category-name">Nome</Label>
-            <Input
-              id="category-name"
-              value={newCategoryName}
-              onChange={(e) => setNewCategoryName(e.target.value)}
-              placeholder="Es. Shopping"
-              className="glass-input"
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="category-icon">Icona</Label>
-            <Input
-              id="category-icon"
-              value={newCategoryIcon}
-              onChange={(e) => setNewCategoryIcon(e.target.value)}
-              placeholder="📝"
-              className="glass-input"
-            />
-          </div>
-
-          <div>
-            <Label>Tipo</Label>
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                size="sm"
-                variant={newCategoryType === 'expense' ? 'default' : 'ghost'}
-                onClick={() => setNewCategoryType('expense')}
-                className="flex-1"
-              >
-                Uscita
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                variant={newCategoryType === 'income' ? 'default' : 'ghost'}
-                onClick={() => setNewCategoryType('income')}
-                className="flex-1"
-              >
-                Entrata
-              </Button>
-            </div>
-          </div>
-
-          <Button 
-            onClick={editingCategory ? handleUpdateCategory : handleAddCategory}
-            className="w-full"
-            disabled={!newCategoryName.trim()}
-          >
-            {editingCategory ? 'Aggiorna Categoria' : 'Aggiungi Categoria'}
-          </Button>
-        </div>
-      </div>
+  const IconSelector = ({ value, onChange }: { value: string; onChange: (icon: string) => void }) => (
+    <div className="grid grid-cols-5 gap-2 max-h-40 overflow-y-auto p-2 border rounded-lg">
+      {Object.entries(categoryIcons).map(([iconName, IconComponent]) => (
+        <button
+          key={iconName}
+          onClick={() => onChange(iconName)}
+          className={`p-3 rounded-lg transition-all duration-200 flex items-center justify-center ${
+            value === iconName
+              ? 'bg-primary text-primary-foreground shadow-lg'
+              : 'bg-muted/50 hover:bg-muted hover:shadow-md'
+          }`}
+        >
+          <IconComponent className="h-5 w-5" />
+        </button>
+      ))}
     </div>
   );
 
-  const Trigger = (
-    <Button variant="outline" className="glass-button w-full flex items-center gap-2">
-      <Tag className="h-4 w-4" />
-      Gestisci Categorie
-    </Button>
-  );
-
-  if (isMobile) {
+  if (isLoading) {
     return (
-      <div className="space-y-3">
-        <Label className="text-sm font-medium">Gestione Categorie</Label>
-        <Drawer open={isOpen} onOpenChange={setIsOpen}>
-          <DrawerTrigger asChild>
-            {Trigger}
-          </DrawerTrigger>
-          <DrawerContent className="glass-card border-t">
-            <DrawerHeader>
-              <DrawerTitle>Gestisci Categorie</DrawerTitle>
-            </DrawerHeader>
-            <div className="px-4 pb-8">
-              {content}
-            </div>
-          </DrawerContent>
-        </Drawer>
-      </div>
+      <Card className="liquid-glass">
+        <CardContent className="p-6">
+          <div className="animate-pulse space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-muted"></div>
+                  <div className="h-4 bg-muted rounded w-32"></div>
+                </div>
+                <div className="flex gap-2">
+                  <div className="w-8 h-8 rounded bg-muted"></div>
+                  <div className="w-8 h-8 rounded bg-muted"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="space-y-3">
-      <Label className="text-sm font-medium">Gestione Categorie</Label>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
-          {Trigger}
-        </DialogTrigger>
-        <DialogContent className="glass-card max-w-md">
-          <DialogHeader>
-            <DialogTitle>Gestisci Categorie</DialogTitle>
-          </DialogHeader>
-          {content}
-        </DialogContent>
-      </Dialog>
-    </div>
+    <Card className="liquid-glass">
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle className="text-xl">Gestione Categorie</CardTitle>
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="liquid-button">
+              <Plus className="h-4 w-4 mr-2" />
+              Nuova Categoria
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="liquid-glass">
+            <DialogHeader>
+              <DialogTitle>Aggiungi Categoria</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Nome</label>
+                <Input
+                  value={newCategory.name}
+                  onChange={(e) => setNewCategory(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Nome categoria"
+                  className="liquid-input"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Icona</label>
+                <IconSelector
+                  value={newCategory.icon}
+                  onChange={(icon) => setNewCategory(prev => ({ ...prev, icon }))}
+                />
+              </div>
+              <div className="flex gap-2 pt-4">
+                <Button onClick={handleCreate} className="flex-1 liquid-button">
+                  Aggiungi
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsAddDialogOpen(false)}
+                  className="liquid-button"
+                >
+                  Annulla
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {categories.map((category) => {
+            const IconComponent = getIcon(category.icon);
+            return (
+              <div
+                key={category.id}
+                className="flex items-center justify-between p-4 rounded-xl liquid-button hover:bg-muted/50 transition-all duration-300"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center">
+                    <IconComponent className="h-5 w-5" />
+                  </div>
+                  <span className="font-medium">{category.name}</span>
+                </div>
+                <div className="flex gap-2">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => openEditDialog(category)}
+                        className="liquid-button"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="liquid-glass">
+                      <DialogHeader>
+                        <DialogTitle>Modifica Categoria</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-sm font-medium mb-2 block">Nome</label>
+                          <Input
+                            value={editingCategory?.name || ''}
+                            onChange={(e) => setEditingCategory(prev => prev ? { ...prev, name: e.target.value } : null)}
+                            placeholder="Nome categoria"
+                            className="liquid-input"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium mb-2 block">Icona</label>
+                          <IconSelector
+                            value={selectedIcon}
+                            onChange={setSelectedIcon}
+                          />
+                        </div>
+                        <div className="flex gap-2 pt-4">
+                          <Button
+                            onClick={() => {
+                              if (editingCategory) {
+                                setEditingCategory(prev => prev ? { ...prev, icon: selectedIcon } : null);
+                                handleUpdate();
+                              }
+                            }}
+                            className="flex-1 liquid-button"
+                          >
+                            Salva
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setEditingCategory(null)}
+                            className="liquid-button"
+                          >
+                            Annulla
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDelete(category.id)}
+                    className="liquid-button text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
+          
+          {categories.length === 0 && (
+            <div className="text-center py-12 text-muted-foreground">
+              <p className="text-lg font-medium mb-2">Nessuna categoria trovata</p>
+              <p className="text-sm">Crea la tua prima categoria!</p>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 };

@@ -25,7 +25,7 @@ export const BottomNavigation = () => {
 
   return (
     <nav className="floating-nav">
-      <div className="flex items-center justify-center gap-8">
+      <div className="flex items-center justify-center gap-6">
         {navigationItems.map(({ href, icon: Icon, label }) => {
           const isActive = location.pathname === href;
           
@@ -34,21 +34,23 @@ export const BottomNavigation = () => {
               key={href}
               to={href}
               className={cn(
-                "flex flex-col items-center gap-1 p-2 rounded-lg transition-all duration-300",
+                "flex flex-col items-center gap-2 py-0 px-2 rounded-xl transition-all duration-300 group touch-manipulation",
                 isActive 
-                  ? "text-primary scale-110" 
-                  : "text-muted-foreground hover:text-foreground hover:scale-105"
+                  ? "text-primary" 
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
               <div className={cn(
-                "p-2 rounded-full transition-all duration-300",
+                "p-3 rounded-full transition-all duration-300 liquid-button min-h-[44px] min-w-[44px] flex items-center justify-center",
                 isActive 
-                  ? "bg-primary/20 text-primary" 
-                  : "hover:bg-muted"
+                  ? "bg-primary/20 text-primary shadow-xl scale-110" 
+                  : "md:hover:bg-muted/50 md:hover:shadow-lg md:hover:scale-105 active:scale-95"
               )}>
-                <Icon className="h-5 w-5" />
+                <Icon className="h-6 w-6" />
               </div>
-              <span className="text-xs font-medium">{label}</span>
+              <span className="text-xs font-semibold transition-all duration-300">
+                {label}
+              </span>
             </NavLink>
           );
         })}

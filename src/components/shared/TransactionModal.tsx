@@ -5,19 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowUpRight, ArrowDownLeft, ArrowRightLeft, Trash2 } from "lucide-react";
+import { transactionTypeIcons, Trash2 } from "@/lib/icons";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-interface Transaction {
-  id: string;
-  type: 'income' | 'expense' | 'transfer';
-  category: string;
-  description: string;
-  amount: number;
-  account: string;
-  date: string;
-  icon: string;
+import { Transaction } from "@/lib/api";
+
+interface TransactionModalProps {
+  transaction: Transaction | null;
+  isOpen: boolean;
+  onClose: () => void;
+  onSave?: (transaction: Transaction) => void;
+  onDelete?: (id: number) => void;
 }
 
 interface TransactionModalProps {
@@ -65,21 +64,14 @@ export const TransactionModal = ({ transaction, isOpen, onClose, onSave, onDelet
   };
 
   const getTransactionIcon = (type: Transaction['type']) => {
-    switch (type) {
-      case 'income':
-        return <ArrowDownLeft className="h-5 w-5 text-success" />;
-      case 'expense':
-        return <ArrowUpRight className="h-5 w-5 text-destructive" />;
-      case 'transfer':
-        return <ArrowRightLeft className="h-5 w-5 text-primary" />;
-    }
+    const IconComponent = transactionTypeIcons[type];
+    return <IconComponent className="h-5 w-5 text-success" />;
   };
 
   const getTypeLabel = (type: Transaction['type']) => {
     switch (type) {
       case 'income': return 'Entrata';
       case 'expense': return 'Uscita';
-      case 'transfer': return 'Trasferimento';
     }
   };
 

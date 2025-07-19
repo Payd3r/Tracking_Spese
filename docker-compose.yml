@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  # Database PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: tracking_spese_db
+    environment:
+      POSTGRES_DB: tracking_spese
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - tracking_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d tracking_spese"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Backend API
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: tracking_spese_api
+    ports:
+      - "${API_PORT}:3001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - tracking_network
+    restart: unless-stopped
+    environment:
+      - DB_USER=postgres
+      - DB_HOST=postgres
+      - DB_NAME=tracking_spese
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=5432
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Applicazione Frontend (Produzione)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tracking_spese_frontend
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - tracking_network
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  tracking_network:
+    driver: bridge 
