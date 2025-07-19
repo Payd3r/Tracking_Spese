@@ -20,7 +20,7 @@ const pool = new Pool({
   user: process.env.DB_USER || 'postgres',
   host: process.env.DB_HOST || 'postgres',
   database: process.env.DB_NAME || 'tracking_spese',
-  password: process.env.DB_PASSWORD || 'password123',
+  password: process.env.DB_PASSWORD || 'tracking_spese_2025',
   port: process.env.DB_PORT || 5432,
 });
 
