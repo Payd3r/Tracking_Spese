@@ -3,69 +3,55 @@ services:
   postgres:
     image: postgres:15-alpine
     container_name: tracking_spese_db
+    restart: unless-stopped
     environment:
       POSTGRES_DB: tracking_spese
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: tracking_spese_2024
-    ports:
-      - "5434:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
     networks:
-      - tracking_network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d tracking_spese"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
+      - tracking-internal
 
-  # Backend API
+  # Backend API Node.js
   api:
     build:
       context: ./api
       dockerfile: Dockerfile
     container_name: tracking_spese_api
-    ports:
-      - "4000:3001"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks:
-      - tracking_network
     restart: unless-stopped
     environment:
-      - DB_USER=postgres
-      - DB_HOST=postgres
-      - DB_NAME=tracking_spese
-      - DB_PASSWORD=tracking_spese_2024
-      - DB_PORT=5432
-      - NODE_ENV=production
+      NODE_ENV: production
+      PORT: 3001
+      DB_HOST: postgres
+      DB_USER: postgres
+      DB_PASSWORD: tracking_spese_2024
+      DB_NAME: tracking_spese
+      DB_PORT: 5432
+    depends_on:
+      - postgres
+    networks:
+      - tracking-internal
 
-
-
-
-  # Applicazione Frontend (Produzione)
+  # Frontend React
   frontend:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: tracking_spese_frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
     depends_on:
       - api
     networks:
-      - tracking_network
-    restart: unless-stopped
-    environment:
-      - NODE_ENV=production
-
+      - tracking-internal
 
 volumes:
   postgres_data:
     driver: local
 
 networks:
-  tracking_network:
+  tracking-internal:
     driver: bridge
