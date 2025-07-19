@@ -3,19 +3,38 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowUpRight, ArrowDownLeft, ArrowRightLeft, Calculator } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, ArrowRightLeft, Calculator, ShoppingCart, Home, Car, UtensilsCrossed, Gamepad2, Heart, ShoppingBag, DollarSign, Gift, TrendingUp, Banknote, CreditCard, Wallet } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 type TransactionType = 'income' | 'expense' | 'transfer';
 
 const categories = {
-  income: ['Stipendio', 'Freelance', 'Investimenti', 'Regali', 'Altro'],
-  expense: ['Spesa', 'Casa', 'Trasporti', 'Ristorante', 'Divertimento', 'Salute', 'Shopping', 'Altro'],
-  transfer: ['Trasferimento']
+  income: [
+    { name: 'Stipendio', icon: DollarSign },
+    { name: 'Freelance', icon: TrendingUp },
+    { name: 'Investimenti', icon: TrendingUp },
+    { name: 'Regali', icon: Gift },
+    { name: 'Altro', icon: DollarSign }
+  ],
+  expense: [
+    { name: 'Spesa', icon: ShoppingCart },
+    { name: 'Casa', icon: Home },
+    { name: 'Trasporti', icon: Car },
+    { name: 'Ristorante', icon: UtensilsCrossed },
+    { name: 'Divertimento', icon: Gamepad2 },
+    { name: 'Salute', icon: Heart },
+    { name: 'Shopping', icon: ShoppingBag },
+    { name: 'Altro', icon: ShoppingCart }
+  ],
+  transfer: []
 };
 
-const accounts = ['Revolut', 'Contanti', 'Banca', 'PayPal'];
+const accounts = [
+  { name: 'Revolut', icon: CreditCard },
+  { name: 'Contanti', icon: Banknote },
+  { name: 'Banca', icon: CreditCard },
+  { name: 'PayPal', icon: Wallet }
+];
 
 const AddTransaction = () => {
   const { toast } = useToast();
@@ -24,17 +43,38 @@ const AddTransaction = () => {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [account, setAccount] = useState('');
+  const [fromAccount, setFromAccount] = useState('');
+  const [toAccount, setToAccount] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+
+  const getDateShortcut = (daysAgo: number) => {
+    const date = new Date();
+    date.setDate(date.getDate() - daysAgo);
+    return date.toISOString().split('T')[0];
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount || !description || !category || !account) {
-      toast({
-        title: "Errore",
-        description: "Compila tutti i campi obbligatori",
-        variant: "destructive"
-      });
-      return;
+    
+    // Validazioni diverse per trasferimenti
+    if (transactionType === 'transfer') {
+      if (!amount || !fromAccount || !toAccount) {
+        toast({
+          title: "Errore",
+          description: "Compila tutti i campi obbligatori",
+          variant: "destructive"
+        });
+        return;
+      }
+    } else {
+      if (!amount || !category || !account) {
+        toast({
+          title: "Errore",
+          description: "Compila tutti i campi obbligatori",
+          variant: "destructive"
+        });
+        return;
+      }
     }
 
     toast({
@@ -47,6 +87,8 @@ const AddTransaction = () => {
     setDescription('');
     setCategory('');
     setAccount('');
+    setFromAccount('');
+    setToAccount('');
   };
 
   const TypeButton = ({ type, icon, label, color }: { 
@@ -124,7 +166,7 @@ const AddTransaction = () => {
 
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="description">Descrizione *</Label>
+            <Label htmlFor="description">Descrizione</Label>
             <Input
               id="description"
               type="text"
@@ -132,43 +174,149 @@ const AddTransaction = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="glass-input"
-              required
             />
           </div>
 
-          {/* Category */}
-          <div className="space-y-2">
-            <Label>Categoria *</Label>
-            <Select value={category} onValueChange={setCategory} required>
-              <SelectTrigger className="glass-input">
-                <SelectValue placeholder="Seleziona categoria" />
-              </SelectTrigger>
-              <SelectContent className="glass-card">
-                {categories[transactionType].map((cat) => (
-                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {/* Category - Solo se non è trasferimento */}
+          {transactionType !== 'transfer' && (
+            <div className="space-y-3">
+              <Label>Categoria *</Label>
+              <div className="grid grid-cols-2 gap-3">
+                {categories[transactionType].map((cat) => {
+                  const IconComponent = cat.icon;
+                  return (
+                    <Button
+                      key={cat.name}
+                      type="button"
+                      variant={category === cat.name ? "default" : "ghost"}
+                      onClick={() => setCategory(cat.name)}
+                      className={`h-16 flex-col gap-2 glass-button ${
+                        category === cat.name 
+                          ? 'bg-primary text-primary-foreground' 
+                          : 'border border-border/20 hover:bg-muted/50'
+                      }`}
+                    >
+                      <IconComponent className="h-5 w-5" />
+                      <span className="text-xs font-medium">{cat.name}</span>
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
-          {/* Account */}
-          <div className="space-y-2">
-            <Label>Conto *</Label>
-            <Select value={account} onValueChange={setAccount} required>
-              <SelectTrigger className="glass-input">
-                <SelectValue placeholder="Seleziona conto" />
-              </SelectTrigger>
-              <SelectContent className="glass-card">
-                {accounts.map((acc) => (
-                  <SelectItem key={acc} value={acc}>{acc}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {/* Account - Diverso per trasferimenti */}
+          {transactionType === 'transfer' ? (
+            <>
+              <div className="space-y-3">
+                <Label>Da Conto *</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  {accounts.map((acc) => {
+                    const IconComponent = acc.icon;
+                    return (
+                      <Button
+                        key={acc.name}
+                        type="button"
+                        variant={fromAccount === acc.name ? "default" : "ghost"}
+                        onClick={() => setFromAccount(acc.name)}
+                        className={`h-16 flex-col gap-2 glass-button ${
+                          fromAccount === acc.name 
+                            ? 'bg-primary text-primary-foreground' 
+                            : 'border border-border/20 hover:bg-muted/50'
+                        }`}
+                      >
+                        <IconComponent className="h-5 w-5" />
+                        <span className="text-xs font-medium">{acc.name}</span>
+                      </Button>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="space-y-3">
+                <Label>A Conto *</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  {accounts.map((acc) => {
+                    const IconComponent = acc.icon;
+                    return (
+                      <Button
+                        key={acc.name}
+                        type="button"
+                        variant={toAccount === acc.name ? "default" : "ghost"}
+                        onClick={() => setToAccount(acc.name)}
+                        className={`h-16 flex-col gap-2 glass-button ${
+                          toAccount === acc.name 
+                            ? 'bg-primary text-primary-foreground' 
+                            : 'border border-border/20 hover:bg-muted/50'
+                        }`}
+                        disabled={acc.name === fromAccount}
+                      >
+                        <IconComponent className="h-5 w-5" />
+                        <span className="text-xs font-medium">{acc.name}</span>
+                      </Button>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="space-y-3">
+              <Label>Conto *</Label>
+              <div className="grid grid-cols-2 gap-3">
+                {accounts.map((acc) => {
+                  const IconComponent = acc.icon;
+                  return (
+                    <Button
+                      key={acc.name}
+                      type="button"
+                      variant={account === acc.name ? "default" : "ghost"}
+                      onClick={() => setAccount(acc.name)}
+                      className={`h-16 flex-col gap-2 glass-button ${
+                        account === acc.name 
+                          ? 'bg-primary text-primary-foreground' 
+                          : 'border border-border/20 hover:bg-muted/50'
+                      }`}
+                    >
+                      <IconComponent className="h-5 w-5" />
+                      <span className="text-xs font-medium">{acc.name}</span>
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
-          {/* Date */}
-          <div className="space-y-2">
+          {/* Date with shortcuts */}
+          <div className="space-y-3">
             <Label htmlFor="date">Data</Label>
+            <div className="flex gap-2 mb-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setDate(getDateShortcut(0))}
+                className="glass-button text-xs"
+              >
+                Oggi
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setDate(getDateShortcut(1))}
+                className="glass-button text-xs"
+              >
+                Ieri
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setDate(getDateShortcut(2))}
+                className="glass-button text-xs"
+              >
+                2 giorni fa
+              </Button>
+            </div>
             <Input
               id="date"
               type="date"

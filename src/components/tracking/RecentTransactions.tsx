@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight, ArrowDownLeft, ArrowRightLeft, MoreHorizontal } from "lucide-react";
+import { TransactionModal } from "@/components/shared/TransactionModal";
 
 interface Transaction {
   id: string;
@@ -67,6 +69,24 @@ const mockTransactions: Transaction[] = [
 ];
 
 export const RecentTransactions = () => {
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleTransactionClick = (transaction: Transaction) => {
+    setSelectedTransaction(transaction);
+    setIsModalOpen(true);
+  };
+
+  const handleTransactionSave = (updatedTransaction: Transaction) => {
+    // In una app reale, qui salveresti nel database
+    console.log('Transazione aggiornata:', updatedTransaction);
+  };
+
+  const handleTransactionDelete = (id: string) => {
+    // In una app reale, qui elimineresti dal database
+    console.log('Transazione eliminata:', id);
+  };
+
   const getTransactionIcon = (type: Transaction['type']) => {
     switch (type) {
       case 'income':
@@ -100,7 +120,11 @@ export const RecentTransactions = () => {
 
       <div className="space-y-3">
         {mockTransactions.map((transaction) => (
-          <div key={transaction.id} className="flex items-center justify-between p-3 rounded-lg glass-button hover:bg-muted/50 transition-all">
+          <div 
+            key={transaction.id} 
+            className="flex items-center justify-between p-3 rounded-lg glass-button hover:bg-muted/50 transition-all cursor-pointer"
+            onClick={() => handleTransactionClick(transaction)}
+          >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
                 {getTransactionIcon(transaction.type)}
@@ -122,6 +146,14 @@ export const RecentTransactions = () => {
           </div>
         ))}
       </div>
+
+      <TransactionModal
+        transaction={selectedTransaction}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleTransactionSave}
+        onDelete={handleTransactionDelete}
+      />
     </Card>
   );
 };
