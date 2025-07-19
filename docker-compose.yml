@@ -15,12 +15,6 @@ services:
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
     networks:
       - tracking-internal
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
   # Backend API Node.js
   api:
@@ -40,8 +34,8 @@ services:
       DB_NAME: tracking_spese
       DB_PORT: 5432
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
+    command: sh -c "sleep 45 && npm start"
     networks:
       - tracking-internal
 
@@ -70,8 +64,7 @@ services:
     ports:
       - "8085:8080"
     depends_on:
-      postgres:
-        condition: service_healthy
+      - postgres
     networks:
       - tracking-internal
 
