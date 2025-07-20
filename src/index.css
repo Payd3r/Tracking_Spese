@@ -198,6 +198,11 @@ All colors MUST be HSL.
     touch-action: manipulation;
     /* Prevent horizontal scroll */
     overflow-x: hidden;
+    /* Prevent overscroll bounce */
+    overscroll-behavior: none;
+    /* Ensure background covers all */
+    background-attachment: fixed;
+    background-size: cover;
   }
 
   /* Animated background particles */
@@ -215,7 +220,6 @@ All colors MUST be HSL.
       radial-gradient(circle at 40% 40%, hsl(142 76% 36% / 0.05) 0%, transparent 50%);
     pointer-events: none;
     z-index: -1;
-    animation: backgroundFloat 20s ease-in-out infinite;
   }
 
   /* PWA Safe Area Support */
@@ -245,6 +249,10 @@ All colors MUST be HSL.
     min-height: 100dvh;
     overflow-x: hidden;
     overscroll-behavior: none;
+    position: relative;
+    background: var(--gradient-background);
+    background-attachment: fixed;
+    background-size: cover;
   }
 
   /* Page content scroll management */
@@ -254,6 +262,22 @@ All colors MUST be HSL.
     overflow-x: hidden;
     overscroll-behavior: none;
     padding-bottom: 6rem; /* Space for bottom navigation */
+    position: relative;
+    background: transparent;
+  }
+
+  /* Additional overscroll prevention */
+  html, body {
+    overscroll-behavior: none;
+    overflow-x: hidden;
+    background: var(--gradient-background);
+    background-attachment: fixed;
+    background-size: cover;
+  }
+
+  /* Ensure all containers respect overscroll */
+  * {
+    overscroll-behavior: none;
   }
 
   /* Fullscreen PWA adjustments */
@@ -520,26 +544,14 @@ All colors MUST be HSL.
   
   @keyframes navFloat {
     0%, 100% {
-      transform: translateX(-50%) translateY(0);
+      transform: translateY(0);
     }
     50% {
-      transform: translateX(-50%) translateY(-5px);
+      transform: translateY(-5px);
     }
   }
-  
-  @keyframes backgroundFloat {
-    0%, 100% {
-      transform: translate(0, 0) scale(1);
-    }
-    33% {
-      transform: translate(30px, -30px) scale(1.1);
-    }
-    66% {
-      transform: translate(-20px, 20px) scale(0.9);
-    }
-  }
-  
-  /* Glass morphism utilities */
+
+  /* Glass blur utilities */
   .glass-blur-sm { backdrop-filter: blur(8px); }
   .glass-blur-md { backdrop-filter: blur(12px); }
   .glass-blur-lg { backdrop-filter: blur(16px); }
