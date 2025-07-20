@@ -46,7 +46,7 @@ export const BalanceCard = () => {
 
   return (
     <Card className="liquid-glass overflow-hidden">
-      <CardContent className="p-8 pb-2">
+      <CardContent className="p-8 pb-4">
         <div className="flex justify-between items-start mb-6">
           <div className="flex-1">
             <p className="text-sm text-muted-foreground mb-3 font-medium">Saldo Totale</p>

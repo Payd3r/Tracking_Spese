@@ -460,6 +460,12 @@ All colors MUST be HSL.
     /* iPhone touch optimizations */
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+    /* Ensure perfect centering */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: fit-content;
+    min-width: max-content;
   }
 
   /* Hide labels on mobile */
@@ -470,6 +476,11 @@ All colors MUST be HSL.
     
     .floating-nav {
       @apply px-6 py-3 bottom-8;
+      /* Enhanced mobile centering */
+      left: 50%;
+      transform: translateX(-50%);
+      width: auto;
+      min-width: auto;
     }
   }
 
@@ -478,6 +489,11 @@ All colors MUST be HSL.
     /* iOS Safari specific */
     .floating-nav {
       bottom: max(1.5rem, env(safe-area-inset-bottom));
+      /* iOS centering fix */
+      left: 50%;
+      transform: translateX(-50%);
+      width: auto;
+      min-width: auto;
     }
     
     /* Larger touch targets for iOS */
