@@ -46,7 +46,7 @@ export const BalanceCard = () => {
 
   return (
     <Card className="liquid-glass overflow-hidden">
-      <CardContent className="p-8">
+      <CardContent className="p-8 pb-2">
         <div className="flex justify-between items-start mb-6">
           <div className="flex-1">
             <p className="text-sm text-muted-foreground mb-3 font-medium">Saldo Totale</p>
@@ -70,7 +70,7 @@ export const BalanceCard = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-3 p-4 rounded-xl bg-muted/50 backdrop-blur-sm">
+        <div className="flex items-center gap-3 px-4 py-0 rounded-xl bg-muted/50 backdrop-blur-sm">
           {isPositive ? (
             <TrendingUp className="h-5 w-5 text-success" />
           ) : (

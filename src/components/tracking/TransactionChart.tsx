@@ -88,7 +88,7 @@ export const TransactionChart = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="h-80 w-full">
+        <div className="h-80 w-full chart-container">
           {isLoading ? (
             <div className="h-full flex items-center justify-center">
               <div className="animate-pulse text-muted-foreground text-lg font-medium">Caricamento...</div>
@@ -106,7 +106,7 @@ export const TransactionChart = () => {
             </div>
           ) : hasExpenses ? (
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData} margin={{ left: 0, right: 0, top: 10, bottom: 10 }}>
+              <LineChart data={chartData} margin={{ left: 5, right: 5, top: 10, bottom: 10 }}>
                 <defs>
                   <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
@@ -120,22 +120,23 @@ export const TransactionChart = () => {
                   tickLine={false}
                   className="text-sm text-muted-foreground"
                   interval={0}
-                  tick={{ fontSize: 12 }}
+                  tick={{ fontSize: 11 }}
+                  height={40}
                 />
                 <YAxis 
                   axisLine={false}
                   tickLine={false}
                   className="text-sm text-muted-foreground"
                   tickFormatter={(value) => `€${value}`}
-                  tick={{ fontSize: 12 }}
-                  width={60}
+                  tick={{ fontSize: 11 }}
+                  width={45}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Line
                   type="monotone"
                   dataKey="balance"
                   stroke="hsl(var(--primary))"
-                  strokeWidth={4}
+                  strokeWidth={3}
                   dot={(props: any) => {
                     const { cx, cy, payload, index } = props;
                     return payload.expenses > 0 ? (
@@ -143,15 +144,15 @@ export const TransactionChart = () => {
                         key={`dot-${index}`}
                         cx={cx}
                         cy={cy}
-                        r={8}
+                        r={6}
                         fill="hsl(var(--primary))"
                         stroke="hsl(var(--background))"
-                        strokeWidth={3}
-                        className="drop-shadow-xl"
+                        strokeWidth={2}
+                        className="drop-shadow-lg"
                       />
                     ) : null;
                   }}
-                  activeDot={{ r: 10, fill: "hsl(var(--primary))", stroke: "hsl(var(--background))", strokeWidth: 3 }}
+                  activeDot={{ r: 8, fill: "hsl(var(--primary))", stroke: "hsl(var(--background))", strokeWidth: 2 }}
                 />
               </LineChart>
             </ResponsiveContainer>
