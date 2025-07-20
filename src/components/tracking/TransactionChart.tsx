@@ -106,7 +106,7 @@ export const TransactionChart = () => {
             </div>
           ) : hasExpenses ? (
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData} margin={{ left: 10, right: 10, top: 10, bottom: 10 }}>
+              <LineChart data={chartData} margin={{ left: 0, right: 0, top: 10, bottom: 10 }}>
                 <defs>
                   <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>

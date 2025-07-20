@@ -454,12 +454,22 @@ All colors MUST be HSL.
   /* Floating bottom navigation */
   .floating-nav {
     @apply fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50;
-    @apply liquid-glass px-8 py-4 rounded-full;
+    @apply backdrop-blur-2xl border border-white/30 shadow-2xl px-6 py-4 rounded-full;
+    background: hsl(var(--card-glass) / 0.95);
+    border-color: hsl(var(--glass-border) / 0.4);
+    box-shadow: 
+      0 8px 32px hsl(var(--glass-shadow) / 0.3),
+      0 0 0 1px hsl(var(--glass-border) / 0.2),
+      0 20px 60px hsl(var(--glass-shadow) / 0.2);
     animation: navFloat 6s ease-in-out infinite;
     pointer-events: auto;
     /* iPhone touch optimizations */
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+    /* Better centering */
+    width: auto;
+    min-width: 280px;
+    max-width: 90vw;
   }
 
   /* Hide labels on mobile */
@@ -469,7 +479,9 @@ All colors MUST be HSL.
     }
     
     .floating-nav {
-      @apply px-6 py-3 bottom-8;
+      @apply px-4 py-3 bottom-8;
+      min-width: 240px;
+      max-width: 85vw;
     }
   }
 
@@ -478,12 +490,16 @@ All colors MUST be HSL.
     /* iOS Safari specific */
     .floating-nav {
       bottom: max(1.5rem, env(safe-area-inset-bottom));
+      /* Enhanced liquid glass for iOS */
+      background: hsl(var(--card-glass) / 0.98);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
     }
     
     /* Larger touch targets for iOS */
     .liquid-button {
-      min-height: 44px;
-      min-width: 44px;
+      min-height: 48px;
+      min-width: 48px;
     }
     
     /* Prevent zoom on input focus */
@@ -593,10 +609,18 @@ All colors MUST be HSL.
   
   @keyframes navFloat {
     0%, 100% {
-      transform: translateY(0);
+      transform: translateX(-50%) translateY(0);
+      box-shadow: 
+        0 8px 32px hsl(var(--glass-shadow) / 0.3),
+        0 0 0 1px hsl(var(--glass-border) / 0.2),
+        0 20px 60px hsl(var(--glass-shadow) / 0.2);
     }
     50% {
-      transform: translateY(-5px);
+      transform: translateX(-50%) translateY(-8px);
+      box-shadow: 
+        0 12px 40px hsl(var(--glass-shadow) / 0.4),
+        0 0 0 1px hsl(var(--glass-border) / 0.3),
+        0 25px 70px hsl(var(--glass-shadow) / 0.3);
     }
   }
 
