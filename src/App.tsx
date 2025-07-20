@@ -14,8 +14,21 @@ import AccountManagement from "./pages/AccountManagement";
 import CategoryManagement from "./pages/CategoryManagement";
 import { BottomNavigation } from "@/components/navigation/BottomNavigation";
 
-// Hook per gesture di swipe
-const useSwipeBack = () => {
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 3,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
+      refetchInterval: 60 * 1000, // 1 minute
+    },
+  },
+});
+
+const AppContent = () => {
+  const { isOnline, triggerSync } = useOnlineStatus();
   const navigate = useNavigate();
   const location = useLocation();
   const touchStart = useRef<{ x: number; y: number } | null>(null);
@@ -52,6 +65,7 @@ const useSwipeBack = () => {
     }
   };
 
+  // Hook per gesture di swipe
   useEffect(() => {
     // Applica solo su mobile e solo nelle pagine che non sono la home
     if (window.innerWidth <= 768 && location.pathname !== '/') {
@@ -66,24 +80,6 @@ const useSwipeBack = () => {
       };
     }
   }, [location.pathname, navigate]);
-};
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 3,
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: true,
-      refetchInterval: 60 * 1000, // 1 minute
-    },
-  },
-});
-
-const AppContent = () => {
-  const { isOnline, triggerSync } = useOnlineStatus();
-  useSwipeBack(); // Aggiungo il hook per le gesture
 
   useEffect(() => {
     // Trigger sync when app loads and is online, but only once
@@ -97,29 +93,29 @@ const AppContent = () => {
   }, [isOnline]); // Remove triggerSync from dependencies to avoid infinite loop
 
   return (
-    <BrowserRouter>
-      <div className="relative fullscreen-container">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/add" element={<AddTransaction />} />
-          <Route path="/transactions" element={<Transactions />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/settings/accounts" element={<AccountManagement />} />
-          <Route path="/settings/categories" element={<CategoryManagement />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <BottomNavigation />
-      </div>
-    </BrowserRouter>
+    <div className="relative fullscreen-container">
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/add" element={<AddTransaction />} />
+        <Route path="/transactions" element={<Transactions />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/settings/accounts" element={<AccountManagement />} />
+        <Route path="/settings/categories" element={<CategoryManagement />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <BottomNavigation />
+    </div>
   );
 };
 
 const App = () => (
   <ThemeProvider defaultTheme="system" storageKey="tracking-spese-theme">
     <QueryClientProvider client={queryClient}>
-      <Toaster />
-      <Sonner />
-      <AppContent />
+      <BrowserRouter>
+        <Toaster />
+        <Sonner />
+        <AppContent />
+      </BrowserRouter>
     </QueryClientProvider>
   </ThemeProvider>
 );

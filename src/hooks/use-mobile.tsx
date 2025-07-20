@@ -1,27 +1,28 @@
-import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import * as React from "react"
+import { useLocation } from "react-router-dom"
 
-export const useIsMobile = () => {
-  const [isMobile, setIsMobile] = useState(false);
+const MOBILE_BREAKPOINT = 768
 
-  useEffect(() => {
-    const checkIsMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
+export function useIsMobile() {
+  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)
 
-    checkIsMobile();
-    window.addEventListener('resize', checkIsMobile);
+  React.useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
+    const onChange = () => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+    }
+    mql.addEventListener("change", onChange)
+    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+    return () => mql.removeEventListener("change", onChange)
+  }, [])
 
-    return () => window.removeEventListener('resize', checkIsMobile);
-  }, []);
-
-  return isMobile;
-};
+  return !!isMobile
+}
 
 export const useScrollToTop = () => {
   const location = useLocation();
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Scroll to top when location changes
     window.scrollTo({
       top: 0,
