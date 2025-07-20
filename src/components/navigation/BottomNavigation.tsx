@@ -25,7 +25,7 @@ export const BottomNavigation = () => {
 
   return (
     <nav className="floating-nav">
-      <div className="flex items-center justify-center gap-6">
+      <div className="flex items-center justify-center gap-6 w-full">
         {navigationItems.map(({ href, icon: Icon, label }) => {
           const isActive = location.pathname === href;
           
@@ -34,7 +34,7 @@ export const BottomNavigation = () => {
               key={href}
               to={href}
               className={cn(
-                "flex flex-col items-center gap-2 py-0 px-2 rounded-xl transition-all duration-300 group touch-manipulation",
+                "flex flex-col items-center gap-2 py-0 px-2 rounded-xl transition-all duration-300 group touch-manipulation flex-1",
                 isActive 
                   ? "text-primary" 
                   : "text-muted-foreground hover:text-foreground"

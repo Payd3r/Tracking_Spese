@@ -453,19 +453,23 @@ All colors MUST be HSL.
 
   /* Floating bottom navigation */
   .floating-nav {
-    @apply fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50;
+    @apply fixed bottom-6 z-50;
     @apply liquid-glass px-8 py-4 rounded-full;
     animation: navFloat 6s ease-in-out infinite;
     pointer-events: auto;
     /* iPhone touch optimizations */
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
-    /* Ensure perfect centering */
+    /* Perfect centering */
+    left: 50%;
+    top: auto;
+    right: auto;
+    transform: translateX(-50%);
+    width: fit-content;
+    min-width: max-content;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: fit-content;
-    min-width: max-content;
   }
 
   /* Hide labels on mobile */
@@ -476,11 +480,12 @@ All colors MUST be HSL.
     
     .floating-nav {
       @apply px-6 py-3 bottom-8;
-      /* Enhanced mobile centering */
-      left: 50%;
-      transform: translateX(-50%);
-      width: auto;
-      min-width: auto;
+      /* Force perfect centering on mobile */
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      width: auto !important;
+      min-width: auto !important;
+      max-width: 90vw;
     }
   }
 
@@ -490,10 +495,11 @@ All colors MUST be HSL.
     .floating-nav {
       bottom: max(1.5rem, env(safe-area-inset-bottom));
       /* iOS centering fix */
-      left: 50%;
-      transform: translateX(-50%);
-      width: auto;
-      min-width: auto;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      width: auto !important;
+      min-width: auto !important;
+      max-width: 90vw;
     }
     
     /* Larger touch targets for iOS */
@@ -514,6 +520,18 @@ All colors MUST be HSL.
       box-shadow: 
         0 8px 32px hsl(var(--glass-shadow)),
         0 0 0 1px hsl(var(--glass-border));
+    }
+  }
+
+  /* Additional mobile centering fix */
+  @media (max-width: 480px) {
+    .floating-nav {
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      width: auto !important;
+      min-width: auto !important;
+      max-width: 85vw;
+      margin: 0 auto;
     }
   }
 
