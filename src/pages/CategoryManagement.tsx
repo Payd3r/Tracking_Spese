@@ -11,6 +11,7 @@ import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { api, Category as ApiCategory } from "@/lib/api";
 import { ArrowLeft, Plus, Edit, Trash2, Tags } from "lucide-react";
 import { getIcon } from "@/lib/icons";
+import { useScrollToTop } from "@/hooks/use-mobile";
 
 interface Category {
   id: number;
@@ -34,6 +35,7 @@ export const CategoryManagement = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  useScrollToTop(); // Aggiungo lo scroll to top
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -167,8 +169,8 @@ export const CategoryManagement = () => {
   };
 
   return (
-    <div className="min-h-screen pb-24 px-4 pt-6">
-      <Card className="glass-card p-6 smooth-enter">
+    <div className="page-content px-4 pt-6">
+      <Card className="liquid-glass p-6 animate-fade-in">
         <div className="flex items-center gap-3 mb-6">
           <Button
             variant="ghost"

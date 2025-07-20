@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { ArrowLeft, Plus, Edit, Trash2, CreditCard } from "lucide-react";
+import { useScrollToTop } from "@/hooks/use-mobile";
 
 interface Account {
   id: number;
@@ -21,6 +22,7 @@ export const AccountManagement = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  useScrollToTop(); // Aggiungo lo scroll to top
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
@@ -105,8 +107,8 @@ export const AccountManagement = () => {
   };
 
   return (
-    <div className="min-h-screen pb-24 px-4 pt-6">
-      <Card className="glass-card p-6 smooth-enter">
+    <div className="page-content px-4 pt-6">
+      <Card className="liquid-glass p-6 animate-fade-in">
         <div className="flex items-center gap-3 mb-6">
           <Button
             variant="ghost"

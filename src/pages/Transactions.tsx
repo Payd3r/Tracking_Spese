@@ -10,13 +10,14 @@ import { api, Transaction, Category } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Filter, Search, ChevronDown, ChevronUp, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsMobile, useScrollToTop } from "@/hooks/use-mobile";
 
 export const Transactions = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  useScrollToTop(); // Aggiungo lo scroll to top
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
@@ -178,7 +179,7 @@ export const Transactions = () => {
   }
 
   return (
-    <div className="min-h-screen pb-24 px-4 pt-6">
+    <div className="page-content px-4 pt-6">
       <Card className="liquid-glass p-6 animate-fade-in">
         <div className="flex items-center gap-3 mb-6">
           <Button
@@ -199,13 +200,13 @@ export const Transactions = () => {
             <Button
               variant="outline"
               onClick={() => setShowFilters(!showFilters)}
-              className="w-full liquid-button mb-4 flex items-center justify-between"
+              className="w-full liquid-button mb-4 flex items-center justify-between border-border/50 bg-background/80 backdrop-blur-sm"
             >
               <div className="flex items-center gap-2">
                 <Filter className="h-4 w-4" />
                 <span>Filtri</span>
                 {hasActiveFilters && (
-                  <div className="w-2 h-2 rounded-full bg-primary"></div>
+                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
                 )}
               </div>
               {showFilters ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -213,8 +214,8 @@ export const Transactions = () => {
           )}
 
           {/* Filters Content */}
-          <div className={`${isMobile ? (showFilters ? 'block' : 'hidden') : 'block'}`}>
-            <div className="liquid-glass p-4 rounded-xl space-y-4">
+          <div className={`${isMobile ? (showFilters ? 'block animate-slide-down' : 'hidden') : 'block'}`}>
+            <div className="liquid-glass p-4 rounded-xl space-y-4 border border-border/30 bg-background/60 backdrop-blur-md">
               {/* Search Bar */}
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -222,17 +223,17 @@ export const Transactions = () => {
                   placeholder="Cerca transazioni..."
                   value={filters.search}
                   onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                  className="pl-10 liquid-input"
+                  className="pl-10 liquid-input bg-background/80 border-border/50 focus:border-primary/50"
                 />
               </div>
               
               {/* Filter Grid */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <Select value={filters.type} onValueChange={(value) => setFilters(prev => ({ ...prev, type: value as any }))}>
-                  <SelectTrigger className="liquid-input">
+                  <SelectTrigger className="liquid-input bg-background/80 border-border/50 focus:border-primary/50">
                     <SelectValue placeholder="Tipo" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="liquid-glass border-border/50 bg-background/95 backdrop-blur-md">
                     <SelectItem value="all">Tutti i tipi</SelectItem>
                     <SelectItem value="income">Entrate</SelectItem>
                     <SelectItem value="expense">Uscite</SelectItem>
@@ -240,10 +241,10 @@ export const Transactions = () => {
                 </Select>
                 
                 <Select value={filters.category} onValueChange={(value) => setFilters(prev => ({ ...prev, category: value }))}>
-                  <SelectTrigger className="liquid-input">
+                  <SelectTrigger className="liquid-input bg-background/80 border-border/50 focus:border-primary/50">
                     <SelectValue placeholder="Categoria" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="liquid-glass border-border/50 bg-background/95 backdrop-blur-md">
                     <SelectItem value="all">Tutte le categorie</SelectItem>
                     {categories.map(cat => (
                       <SelectItem key={cat.id} value={cat.id.toString()}>
@@ -254,10 +255,10 @@ export const Transactions = () => {
                 </Select>
                 
                 <Select value={filters.account} onValueChange={(value) => setFilters(prev => ({ ...prev, account: value }))}>
-                  <SelectTrigger className="liquid-input">
+                  <SelectTrigger className="liquid-input bg-background/80 border-border/50 focus:border-primary/50">
                     <SelectValue placeholder="Conto" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="liquid-glass border-border/50 bg-background/95 backdrop-blur-md">
                     <SelectItem value="all">Tutti i conti</SelectItem>
                     {accounts.map(account => (
                       <SelectItem key={account} value={account}>
@@ -274,7 +275,7 @@ export const Transactions = () => {
                   variant="ghost"
                   size="sm"
                   onClick={clearFilters}
-                  className="liquid-button text-muted-foreground hover:text-foreground"
+                  className="liquid-button text-muted-foreground hover:text-foreground bg-background/50 hover:bg-background/80"
                 >
                   <X className="h-4 w-4 mr-2" />
                   Cancella filtri
