@@ -88,7 +88,7 @@ export const TransactionChart = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="h-80 p-0">
+        <div className="h-80 w-full">
           {isLoading ? (
             <div className="h-full flex items-center justify-center">
               <div className="animate-pulse text-muted-foreground text-lg font-medium">Caricamento...</div>
@@ -106,7 +106,7 @@ export const TransactionChart = () => {
             </div>
           ) : hasExpenses ? (
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
+              <LineChart data={chartData} margin={{ left: 10, right: 10, top: 10, bottom: 10 }}>
                 <defs>
                   <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
@@ -119,12 +119,16 @@ export const TransactionChart = () => {
                   axisLine={false}
                   tickLine={false}
                   className="text-sm text-muted-foreground"
+                  interval={0}
+                  tick={{ fontSize: 12 }}
                 />
                 <YAxis 
                   axisLine={false}
                   tickLine={false}
                   className="text-sm text-muted-foreground"
                   tickFormatter={(value) => `€${value}`}
+                  tick={{ fontSize: 12 }}
+                  width={60}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Line

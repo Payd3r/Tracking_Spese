@@ -7,11 +7,13 @@ import { useState } from "react";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { useNavigate } from "react-router-dom";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Settings = () => {
   const { theme, setTheme } = useTheme();
   const { isOnline, lastSync, isSyncing, pendingSync, triggerSync } = useOnlineStatus();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [notifications, setNotifications] = useState(true);
   const [autoSync, setAutoSync] = useState(true);
 
@@ -100,7 +102,7 @@ const Settings = () => {
                   ) : (
                     <RefreshCw className="h-4 w-4" />
                   )}
-                  Sincronizza
+                  {isMobile ? null : 'Sincronizza'}
                 </Button>
               </div>
 
