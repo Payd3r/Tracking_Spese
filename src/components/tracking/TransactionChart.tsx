@@ -88,7 +88,7 @@ export const TransactionChart = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="h-80">
+        <div className="h-80 p-0">
           {isLoading ? (
             <div className="h-full flex items-center justify-center">
               <div className="animate-pulse text-muted-foreground text-lg font-medium">Caricamento...</div>
